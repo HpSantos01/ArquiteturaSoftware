@@ -3,9 +3,9 @@ package br.usjt.arqsw.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,37 +15,34 @@ import br.usjt.arqsw.entity.Chamado;
 import br.usjt.arqsw.entity.Fila;
 import br.usjt.arqsw.service.ChamadoService;
 import br.usjt.arqsw.service.FilaService;
-/**
- * 
- * @author hpsantos
- *
- */
+
 @Controller
 public class ManterChamadosController {
-	private FilaService filaService;
-	private ChamadoService chamadoService;
-
-	public ManterChamadosController() {
-		filaService = new FilaService();
-		chamadoService = new ChamadoService();
+	private ChamadoService cs;
+	private FilaService fs;
+	
+	@Autowired
+	public ManterChamadosController(ChamadoService cs, FilaService fs ) {
+		this.cs = cs;
+		this.fs = fs;
 	}
 
 	/**
 	 * 
-	 * @return
+	 * @return Chama a página inicial index.jsp
 	 */
 	@RequestMapping("index")
 	public String inicio() {
-		return "index";
+		return "Login";
 	}
 
 	private List<Fila> listarFilas() throws IOException{
-			return filaService.listarFilas();
+			return fs.listarFilas();
 	}
 	
 	/**
 	 * 
-	 * @param model Acesso Ã  request http
+	 * @param model Acesso à request http
 	 * @return JSP de Listar Chamados
 	 */
 	@RequestMapping("/listar_filas_exibir")
@@ -68,19 +65,19 @@ public class ManterChamadosController {
 				return "ChamadoListar";
 				//return "redirect:listar_filas_exibir";
 			}
-			ArrayList<Chamado> lista = new ArrayList<>();
-			lista = chamadoService.listarChamados(fila);
-			fila =  filaService.carregar(fila.getId());
-			model.addAttribute("lista", lista);
+			fila = fs.carregar(fila.getId());
 			model.addAttribute("fila", fila);
 
+			// Carregar os chamados
+			ArrayList<Chamado> chamados = cs.listarChamados(fila);
+			model.addAttribute("chamados", chamados);
+			
 			return "ChamadoListarExibir";
-
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			return "Erro";
 		}
 	}
-
+	
 }

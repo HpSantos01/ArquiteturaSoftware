@@ -5,19 +5,15 @@ import java.io.Serializable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-/**
- * 
- * @author aglima
- *
- */
+
 public class Fila implements Serializable{
 	/**
-	 *  aglima
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@NotNull(message="A fila não pode ser vazia")
-	@Min(value=1, message="A fila nãoo pode ser vazia")
+	@Min(value=1, message="A fila não pode ser vazia")
 	private int id;
 	
 	@NotNull

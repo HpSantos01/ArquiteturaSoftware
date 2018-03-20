@@ -7,15 +7,36 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import br.usjt.arqsw.entity.Fila;
 
+@Repository
 public class FilaDAO {
+	private Connection conn;
+		
+		@Autowired
+		public FilaDAO(DataSource dataSource) throws IOException{
+			try {
+				this.conn = dataSource.getConnection();
+			} catch (SQLException e) {
+				throw new IOException(e);
+			}
+		}
 
+	/**
+	 * 
+	 * @return Pegar os dados do banco e carrega a lista das filas
+	 * @throws IOException
+	 */
 	public ArrayList<Fila> listarFilas() throws IOException {
 		String query = "select id_fila, nm_fila from fila";
 		ArrayList<Fila> lista = new ArrayList<>();
-		try(Connection conn = ConnectionFactory.getConnection();
-			PreparedStatement pst = conn.prepareStatement(query);
+		//try(Connection conn = ConnectionFactory.getConnection();
+			try(PreparedStatement pst = conn.prepareStatement(query);
 			ResultSet rs = pst.executeQuery();){
 			
 			while(rs.next()) {
@@ -31,18 +52,33 @@ public class FilaDAO {
 		return lista;
 	}
 	
-	public Fila carregar(int  id) throws IOException {
-		String query = "select id_fila, nm_fila from fila where id_fila =" + id;
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws IOException
+	 */
+	public Fila carregar(int id) throws IOException {
 		Fila fila = new Fila();
-		try(Connection conn = ConnectionFactory.getConnection();
-			PreparedStatement pst = conn.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();){
-			while(rs.next()) {
-				fila.setId(rs.getInt("id_fila"));
-				fila.setNome(rs.getString("nm_fila"));
+		fila.setId(id);
+		String query = "select nm_fila from fila where id_fila=?";
+
+		//try (Connection conn = ConnectionFactory.getConnection();
+			try(PreparedStatement pst = conn.prepareStatement(query);) {
+			pst.setInt(1, id);
+			try (ResultSet rs = pst.executeQuery();) {
+
+				if (rs.next()) {
+					fila.setNome(rs.getString("nm_fila"));
+				} else {
+					fila.setNome(null);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new IOException(e);
 			}
-			
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new IOException(e);
 		}
 		return fila;
