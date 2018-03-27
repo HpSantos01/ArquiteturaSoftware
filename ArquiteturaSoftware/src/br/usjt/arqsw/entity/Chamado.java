@@ -2,25 +2,39 @@ package br.usjt.arqsw.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
+@Table(name="chamado")
 public class Chamado {
+	@Id
+	@Column(name="id_chamado")
 	private int numero;
 	
+	@Column(name="dt_abertura")
 	private Date dataAbertura;
 	
+	@Column(name="dt_fechamento")
 	private Date dataFechamento;
 	
+	@Column(name="status")
 	private String status;
 	
 	@NotNull 
-	@Size(max=100,min=10, message="O tamanho da descrição deve estar entre 10 e 100 caracteres")
+	@Size(max=100,min=10, message="O tamanho da descriÃ§Ã£o deve estar entre 10 e 100 caracteres")
+	@Column(name="descricao")
 	private String descricao;
 	
 	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "id_fila")
 	private Fila fila;
 	
 	
@@ -85,5 +99,6 @@ public class Chamado {
 				+ ", dataFechamento=" + dataFechamento + ", status=" + status
 				+ ", descricao=" + descricao + ", fila=" + fila + "]";
 	}
-	
+
+
 }

@@ -3,6 +3,7 @@ package br.usjt.arqsw.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,36 +16,36 @@ import br.usjt.arqsw.entity.Chamado;
 import br.usjt.arqsw.entity.Fila;
 import br.usjt.arqsw.service.ChamadoService;
 import br.usjt.arqsw.service.FilaService;
-
+/**
+ * 
+ * @author hpucci
+ *
+ */
 @Controller
 public class ManterChamadosController {
-	private ChamadoService cs;
-	private FilaService fs;
-	
+	private FilaService filaService;
+	private ChamadoService chamadoService;
+
 	@Autowired
-	public ManterChamadosController(ChamadoService cs, FilaService fs ) {
-		this.cs = cs;
-		this.fs = fs;
+	public ManterChamadosController(FilaService fs, ChamadoService cs) {
+		filaService = fs;
+		chamadoService = cs;
 	}
 
 	/**
 	 * 
-	 * @return Chama a página inicial index.jsp
+	 * @return
 	 */
 	@RequestMapping("index")
 	public String inicio() {
-		return "Login";
+		return "index";
 	}
 
 	private List<Fila> listarFilas() throws IOException{
-			return fs.listarFilas();
+			return filaService.listarFilas();
 	}
 	
-	/**
-	 * 
-	 * @param model Acesso à request http
-	 * @return JSP de Listar Chamados
-	 */
+	
 	@RequestMapping("/listar_filas_exibir")
 	public String listarFilasExibir(Model model) {
 		try {
@@ -65,11 +66,10 @@ public class ManterChamadosController {
 				return "ChamadoListar";
 				//return "redirect:listar_filas_exibir";
 			}
-			fila = fs.carregar(fila.getId());
+			fila = filaService.carregar(fila.getId());
 			model.addAttribute("fila", fila);
 
-			// Carregar os chamados
-			ArrayList<Chamado> chamados = cs.listarChamados(fila);
+			List<Chamado> chamados = chamadoService.listarChamados(fila);
 			model.addAttribute("chamados", chamados);
 			
 			return "ChamadoListarExibir";
@@ -79,5 +79,5 @@ public class ManterChamadosController {
 			return "Erro";
 		}
 	}
-	
+
 }
